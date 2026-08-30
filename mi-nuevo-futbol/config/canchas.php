@@ -1,0 +1,1 @@
+ <?php return [ 'hora_apertura' => '06:00', 'hora_cierre' => '23:00', 'max_horas_por_reserva' => 4, ];
