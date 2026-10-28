@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('canchas')) {
+            return; // ya creada por la migración de cache
+        }
+
         Schema::create('canchas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // a qué negocio/dueño pertenece

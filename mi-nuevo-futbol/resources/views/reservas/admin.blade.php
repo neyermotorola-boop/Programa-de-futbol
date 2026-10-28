@@ -1,211 +1,183 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de reservas</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --fondo: #0F1C14;
-            --superficie: #16241B;
-            --superficie-alta: #1E3024;
-            --turf: #2F6B3C;
-            --turf-claro: #3F8B4E;
-            --linea: #F2F2E9;
-            --floodlight: #F2A93B;
-            --muted: #9FB3A5;
-        }
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            background: var(--fondo);
-            color: var(--linea);
-            font-family: 'Inter', sans-serif;
-            padding: 32px 16px 64px;
-        }
-        .contenedor { max-width: 720px; margin: 0 auto; }
-        .nav-principal {
-            max-width: 720px;
-            margin: 0 auto 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--superficie);
-            border: 1px solid rgba(242,242,233,0.08);
-            border-radius: 12px;
-            padding: 12px 18px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .nav-marca {
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            letter-spacing: 1px;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .nav-marca .badge {
-            width: 34px; height: 34px; border-radius: 9px;
-            background: linear-gradient(135deg, var(--turf), var(--turf-claro));
-            color: var(--floodlight); display: flex; align-items: center; justify-content: center;
-            font-size: 17px; font-weight: 700; box-shadow: 0 0 10px rgba(242,169,59,0.2);
-        }
-        .nav-enlaces { display: flex; gap: 6px; flex-wrap: wrap; }
-        .nav-enlaces a {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            color: var(--muted);
-            text-decoration: none;
-            padding: 9px 14px;
-            border-radius: 8px;
-            transition: background 0.15s ease, color 0.15s ease;
-        }
-        .nav-enlaces a:hover { color: var(--linea); background: var(--superficie-alta); }
-        .nav-enlaces a.activo { background: var(--turf); color: var(--linea); }
-        h1 {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            font-size: 28px;
-            margin-bottom: 4px;
-        }
-        .subtitulo { color: var(--muted); font-size: 15px; margin-bottom: 20px; }
-        form.fecha { margin-bottom: 24px; }
-        input[type=date] {
-            background: var(--superficie-alta);
-            border: 1px solid rgba(242,242,233,0.15);
-            color: var(--linea);
-            padding: 8px 12px;
-            border-radius: 6px;
-        }
-        .reserva {
-            background: var(--superficie);
-            border: 1px solid rgba(242,242,233,0.08);
-            border-radius: 12px;
-            padding: 16px 18px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            transition: border-color 0.15s ease;
-        }
-        .reserva:hover { border-color: rgba(242,242,233,0.18); }
-        .reserva .detalle .cancha {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            color: var(--turf-claro);
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-        .reserva .detalle .hora {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 22px;
-            font-weight: 700;
-        }
-        .reserva .detalle .cliente { font-size: 15px; color: var(--linea); margin-top: 2px; }
-        .reserva .detalle .estado {
-            display: inline-block;
-            margin-top: 4px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--muted);
-        }
-        .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
-        .acciones form { margin: 0; }
-        .btn-confirmar, .btn-cancelar, .badge-confirmada {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 12px;
-            font-weight: 600;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: filter 0.15s ease;
-        }
-        .btn-confirmar { background: var(--turf-claro); color: #0b150e; }
-        .btn-confirmar:hover { filter: brightness(1.1); }
-        .btn-cancelar { background: var(--superficie-alta); color: var(--muted); border: 1px solid rgba(242,242,233,0.15); }
-        .btn-cancelar:hover { color: #E08674; border-color: #E08674; }
-        .badge-confirmada {
-            background: rgba(63,139,78,0.18);
-            color: var(--turf-claro);
-            cursor: default;
-        }
-        .mensaje-exito {
-            background: rgba(63,139,78,0.18);
-            border: 1px solid var(--turf-claro);
-            color: var(--linea);
-            padding: 14px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .vacio { color: var(--muted); text-align: center; padding: 40px 0; }
-    </style>
-</head>
-<body>
-<nav class="nav-principal">
-    <div class="nav-marca"><span class="badge">C</span> {{ strtoupper($negocio->name) }}</div>
-    <div class="nav-enlaces">
-        <a href="{{ route('reservas.index', $negocio->slug) }}">Reservas</a>
-        <a href="{{ route('reservas.admin') }}" class="activo">Panel del día</a>
-        <a href="{{ route('reservas.semana') }}">Agenda semanal</a>
-        <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-            @csrf
-            <button type="submit" style="font-family:'Oswald',sans-serif; text-transform:uppercase; font-size:13px; letter-spacing:0.5px; color:var(--muted); background:none; border:none; padding:9px 14px; border-radius:8px; cursor:pointer; transition: background 0.15s ease, color 0.15s ease;" onmouseover="this.style.background='var(--superficie-alta)'; this.style.color='var(--linea)';" onmouseout="this.style.background='none'; this.style.color='var(--muted)';">Salir</button>
-        </form>
+@extends('layouts.app')
+
+@section('title', 'Panel del día')
+
+@section('nav')
+    @include('partials.nav-negocio', ['negocio' => $negocio, 'activo' => 'admin'])
+@endsection
+
+@php
+    $dia = \Carbon\Carbon::parse($fecha)->locale('es');
+    $pendientes = $reservas->where('estado', '!=', 'confirmada')->count();
+    $confirmadas = $reservas->where('estado', 'confirmada')->count();
+    $esSalon = $negocio->tipo_negocio === 'salon';
+    $iniciales = fn ($nombre) => collect(preg_split('/\s+/', trim($nombre)))->filter()->take(2)->map(fn ($p) => mb_strtoupper(mb_substr($p, 0, 1)))->implode('');
+    $duracion = function ($ini, $fin) {
+        $m = (strtotime($fin) - strtotime($ini)) / 60;
+        $h = intdiv($m, 60);
+        $r = $m % 60;
+        return trim(($h ? $h . ' h ' : '') . ($r ? $r . ' min' : ''));
+    };
+@endphp
+
+@push('styles')
+<style>
+    .selector-fecha { display: flex; align-items: center; gap: 8px; }
+    .selector-fecha form { margin: 0; }
+    .selector-fecha input[type=date] { width: auto; min-width: 170px; }
+
+    /* ---------- Tarjeta de cita ---------- */
+    .citas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 18px; }
+    .cita {
+        position: relative; display: flex; flex-direction: column; gap: 18px; padding: 20px; border-radius: 22px;
+        background: linear-gradient(165deg, color-mix(in srgb, var(--superficie-alta) 70%, var(--superficie)), var(--superficie) 60%);
+        box-shadow: 0 1px 0 color-mix(in srgb, var(--linea) 7%, transparent) inset, 0 18px 36px -22px rgba(0,0,0,0.55);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .cita:hover { transform: translateY(-3px); box-shadow: 0 1px 0 color-mix(in srgb, var(--linea) 9%, transparent) inset, 0 26px 44px -22px rgba(0,0,0,0.6); }
+
+    .cita-fila { display: flex; gap: 16px; align-items: stretch; }
+    .cita-hora {
+        flex: none; width: 92px; padding: 14px 8px; border-radius: 18px; text-align: center;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+        background: color-mix(in srgb, var(--turf) 24%, var(--superficie-alta));
+    }
+    .cita-hora .hh { font-family: var(--fuente-titulo); font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; }
+    .cita-hora .ap { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; color: var(--primario-vis); }
+    .cita-hora .hasta { margin-top: 8px; font-size: 11px; line-height: 1.3; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    .cita-cuerpo { min-width: 0; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+    .cita-estado { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--acento-vis); margin-bottom: 6px; }
+    .cita-estado::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent); }
+    .cita.confirmada .cita-estado { color: var(--primario-vis); }
+    .cita-nombre { font-family: var(--fuente-titulo); font-size: 18px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cita-servicio { color: var(--texto-suave); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cita-dur { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+
+    .cita-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+    .cita-meta .dato {
+        display: inline-flex; align-items: center; gap: 7px; min-width: 0; padding: 6px 12px 6px 6px; border-radius: 999px;
+        background: color-mix(in srgb, var(--linea) 6%, transparent); font-size: 13px; color: var(--texto-suave); text-decoration: none;
+        transition: background 0.15s, color 0.15s;
+    }
+    .cita-meta a.dato:hover { background: color-mix(in srgb, var(--linea) 11%, transparent); color: var(--linea); }
+    .cita-meta .avatar-mini { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: 10.5px; font-weight: 800; letter-spacing: 0.3px; background: var(--turf-claro); color: var(--texto-primario); }
+    .cita-meta .ico-mini { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--primario-vis) 14%, transparent); color: var(--primario-vis); }
+    .cita-meta .dato-diseno img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex: none; }
+    .cita-meta .dato span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .cita-acciones { display: flex; gap: 10px; align-items: center; }
+    .cita-acciones form { margin: 0; display: flex; }
+    .cita-acciones .principal { flex: 1; }
+    .cita-acciones .principal .btn { width: 100%; }
+    .btn-suave { background: color-mix(in srgb, var(--linea) 7%, transparent); color: var(--muted); border: 0; }
+    .btn-suave:hover { background: color-mix(in srgb, var(--error) 14%, transparent); color: var(--error); }
+    .cita-ok { flex: 1; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--primario-vis); }
+
+    @media (max-width: 720px) {
+        .selector-fecha { width: 100%; }
+        .selector-fecha form { flex: 1; }
+        .selector-fecha input[type=date] { width: 100%; min-width: 0; }
+        .cita { padding: 16px; gap: 14px; border-radius: 20px; }
+        .cita-hora { width: 78px; }
+        .cita-hora .hh { font-size: 24px; }
+    }
+</style>
+@endpush
+
+@section('content')
+    <div class="page-head">
+        <div>
+            <div class="eyebrow"><x-icon name="calendar" size="14" /> {{ $dia->isToday() ? 'Hoy' : ucfirst($dia->translatedFormat('l')) }}</div>
+            <h1>Panel de reservas</h1>
+            <div class="subtitulo">{{ ucfirst($dia->translatedFormat('l j \d\e F \d\e Y')) }} · confirma o cancela cada reserva.</div>
+        </div>
+        <div class="selector-fecha">
+            <a href="{{ route('reservas.admin', ['fecha' => $dia->copy()->subDay()->format('Y-m-d')]) }}" class="btn btn-secondary btn-icon" aria-label="Día anterior"><x-icon name="chevron-left" /></a>
+            <form method="GET" action="{{ route('reservas.admin') }}">
+                <input type="date" name="fecha" value="{{ $fecha }}" onchange="this.form.submit()" aria-label="Elegir fecha">
+            </form>
+            <a href="{{ route('reservas.admin', ['fecha' => $dia->copy()->addDay()->format('Y-m-d')]) }}" class="btn btn-secondary btn-icon" aria-label="Día siguiente"><x-icon name="chevron-right" /></a>
+        </div>
     </div>
-</nav>
-<div class="contenedor">
-    <h1>Panel de reservas</h1>
-    <div class="subtitulo">Confirma o cancela cada reserva del día.</div>
 
     @if (session('exito'))
-        <div class="mensaje-exito">{{ session('exito') }}</div>
+        <div class="alerta alerta-exito" role="status"><x-icon name="check-circle" /> <div>{{ session('exito') }}</div></div>
     @endif
 
-    <form class="fecha" method="GET" action="{{ route('reservas.admin') }}">
-        <input type="date" name="fecha" value="{{ $fecha }}" onchange="this.form.submit()">
-    </form>
-
-    @forelse ($reservas as $reserva)
-        <div class="reserva">
-            <div class="detalle">
-                <div class="cancha">{{ $reserva->cancha->nombre }}</div>
-                <div class="hora">{{ \Carbon\Carbon::createFromFormat('H:i:s', $reserva->hora_inicio)->format('g:i A') }} – {{ \Carbon\Carbon::createFromFormat('H:i:s', $reserva->hora_fin)->format('g:i A') }}</div>
-                <div class="cliente">{{ $reserva->nombre_cliente }} · {{ $reserva->telefono }}</div>
-                <div class="estado">{{ $reserva->estado }}</div>
-            </div>
-
-            <div class="acciones">
-                @if ($reserva->estado === 'confirmada')
-                    <span class="badge-confirmada">✓ Confirmada</span>
-                @else
-                    <form method="POST" action="{{ route('reservas.confirmar', $reserva) }}">
-                        @csrf
-                        <button type="submit" class="btn-confirmar">Confirmar</button>
-                    </form>
-                @endif
-
-                <form method="POST" action="{{ route('reservas.cancelar', $reserva) }}" onsubmit="return confirm('¿Seguro que quieres cancelar esta reserva? El horario quedará libre de nuevo.');">
-                    @csrf
-                    <button type="submit" class="btn-cancelar">Cancelar</button>
-                </form>
-            </div>
+    <div class="stats">
+        <div class="stat">
+            <span class="ico-caja verde"><x-icon name="calendar-days" size="20" /></span>
+            <div><div class="valor">{{ $reservas->count() }}</div><div class="etiqueta">Reservas del día</div></div>
         </div>
-    @empty
-        <div class="vacio">No hay reservas para esta fecha.</div>
-    @endforelse
-</div>
-</body>
-</html>
+        <div class="stat">
+            <span class="ico-caja"><x-icon name="hourglass" size="20" /></span>
+            <div><div class="valor">{{ $pendientes }}</div><div class="etiqueta">Pendientes</div></div>
+        </div>
+        <div class="stat">
+            <span class="ico-caja verde"><x-icon name="check-circle" size="20" /></span>
+            <div><div class="valor">{{ $confirmadas }}</div><div class="etiqueta">Confirmadas</div></div>
+        </div>
+    </div>
+
+    @if ($reservas->isEmpty())
+        <div class="vacio">
+            <div class="ico-caja"><x-icon name="inbox" size="26" /></div>
+            <strong>Sin reservas para esta fecha</strong>
+            Cuando un cliente reserve, aparecerá aquí.
+        </div>
+    @else
+        <div class="citas">
+            @foreach ($reservas as $reserva)
+                @php
+                    $confirmada = $reserva->estado === 'confirmada';
+                    $inicio = \Carbon\Carbon::parse($reserva->hora_inicio);
+                    $fin = \Carbon\Carbon::parse($reserva->hora_fin);
+                @endphp
+                <article class="cita {{ $confirmada ? 'confirmada' : '' }}">
+                    <div class="cita-fila">
+                        <div class="cita-hora">
+                            <span class="hh">{{ $inicio->format('g:i') }}</span>
+                            <span class="ap">{{ $inicio->format('A') }}</span>
+                            <span class="hasta">hasta<br>{{ $fin->format('g:i A') }}</span>
+                        </div>
+                        <div class="cita-cuerpo">
+                            <span class="cita-estado">{{ $confirmada ? 'Confirmada' : 'Pendiente' }}</span>
+                            <div class="cita-nombre" title="{{ $reserva->nombre_cliente }}">{{ $reserva->nombre_cliente }}</div>
+                            <div class="cita-servicio">{{ $esSalon ? $reserva->nombreServicios() : $reserva->cancha->nombre }}</div>
+                            <div class="cita-dur">{{ $duracion($reserva->hora_inicio, $reserva->hora_fin) }}</div>
+                        </div>
+                    </div>
+
+                    <div class="cita-meta">
+                        @if ($esSalon)
+                            <span class="dato"><span class="avatar-mini">{{ $iniciales($reserva->cancha->nombre) }}</span><span>{{ $reserva->cancha->nombre }}</span></span>
+                        @endif
+                        <a class="dato num" href="tel:{{ $reserva->telefono }}"><span class="ico-mini"><x-icon name="phone" size="13" /></span><span>{{ $reserva->telefono }}</span></a>
+                        @if ($reserva->email_cliente)
+                            <a class="dato" href="mailto:{{ $reserva->email_cliente }}"><span class="ico-mini"><x-icon name="mail" size="13" /></span><span>{{ $reserva->email_cliente }}</span></a>
+                        @endif
+                        @if ($reserva->urlDiseno())
+                            <a class="dato dato-diseno" href="{{ $reserva->urlDiseno() }}" target="_blank" rel="noopener" title="Abrir la foto del diseño"><img src="{{ $reserva->urlDiseno() }}" alt="Diseño elegido"><span>Diseño{{ $reserva->diseno_forma ? ' · ' . (\App\Models\Reserva::FORMAS_UNA[$reserva->diseno_forma] ?? '') : '' }}</span></a>
+                        @endif
+                    </div>
+
+                    <div class="cita-acciones">
+                        @if ($confirmada)
+                            <span class="cita-ok"><x-icon name="check-circle" size="18" /> Cita confirmada</span>
+                        @else
+                            <form method="POST" action="{{ route('reservas.confirmar', $reserva) }}" class="principal">
+                                @csrf
+                                <button type="submit" class="btn btn-success"><x-icon name="check" size="16" /> Confirmar cita</button>
+                            </form>
+                        @endif
+                        <form method="POST" action="{{ route('reservas.cancelar', $reserva) }}" onsubmit="return confirm('¿Seguro que quieres cancelar esta reserva? El horario quedará libre de nuevo.');">
+                            @csrf
+                            <button type="submit" class="btn btn-suave"><x-icon name="x" size="16" /> Cancelar</button>
+                        </form>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+    @endif
+@endsection

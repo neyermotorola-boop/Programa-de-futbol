@@ -1,260 +1,158 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda semanal</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --fondo: #0F1C14;
-            --superficie: #16241B;
-            --superficie-alta: #1E3024;
-            --turf: #2F6B3C;
-            --turf-claro: #3F8B4E;
-            --linea: #F2F2E9;
-            --floodlight: #F2A93B;
-            --muted: #9FB3A5;
-        }
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            background: var(--fondo);
-            color: var(--linea);
-            font-family: 'Inter', sans-serif;
-            padding: 24px 16px 64px;
-        }
-        .contenedor { max-width: 900px; margin: 0 auto; }
-        .nav-principal {
-            max-width: 900px;
-            margin: 0 auto 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--superficie);
-            border: 1px solid rgba(242,242,233,0.08);
-            border-radius: 12px;
-            padding: 12px 18px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .nav-marca {
-            font-family: 'Oswald', sans-serif;
-            font-weight: 700;
-            letter-spacing: 1px;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .nav-marca .badge {
-            width: 34px; height: 34px; border-radius: 9px;
-            background: linear-gradient(135deg, var(--turf), var(--turf-claro));
-            color: var(--floodlight); display: flex; align-items: center; justify-content: center;
-            font-size: 17px; font-weight: 700; box-shadow: 0 0 10px rgba(242,169,59,0.2);
-        }
-        .nav-enlaces { display: flex; gap: 6px; flex-wrap: wrap; }
-        .nav-enlaces a {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            color: var(--muted);
-            text-decoration: none;
-            padding: 9px 14px;
-            border-radius: 8px;
-            transition: background 0.15s ease, color 0.15s ease;
-        }
-        .nav-enlaces a:hover { color: var(--linea); background: var(--superficie-alta); }
-        .nav-enlaces a.activo { background: var(--turf); color: var(--linea); }
-        h1 {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            font-size: 26px;
-            margin: 0 0 4px;
-        }
-        .subtitulo { color: var(--muted); font-size: 15px; margin-bottom: 4px; }
-        .enlace-volver {
-            display: inline-block;
-            color: var(--floodlight);
-            font-size: 13px;
-            text-decoration: none;
-            margin-bottom: 16px;
-        }
-        .nav-semana {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            gap: 10px;
-        }
-        .nav-semana a {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 1px;
-            color: var(--linea);
-            text-decoration: none;
-            background: var(--superficie-alta);
-            padding: 8px 14px;
-            border-radius: 6px;
-            border: 1px solid rgba(242,242,233,0.12);
-            transition: border-color 0.15s ease;
-        }
-        .nav-semana a:hover { border-color: var(--floodlight); }
-        .rango-semana {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 13px;
-            color: var(--muted);
-        }
-        .tabs {
-            display: flex;
-            overflow-x: auto;
-            gap: 6px;
-            margin-bottom: 16px;
-            padding-bottom: 4px;
-        }
-        .tab {
-            flex: 0 0 auto;
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            background: var(--superficie);
-            border: 1px solid rgba(242,242,233,0.1);
-            cursor: pointer;
-            text-align: center;
-            color: var(--muted);
-            transition: border-color 0.15s ease;
-        }
-        .tab:not(.activo):hover { border-color: rgba(242,242,233,0.3); }
-        .tab .dia-num { display: block; font-family: 'Roboto Mono', monospace; font-size: 17px; color: var(--linea); margin-top: 2px; }
-        .tab.activo { background: var(--turf); border-color: var(--turf-claro); color: var(--linea); }
-        .tab.activo .dia-num { color: var(--linea); }
-        .tab.hoy:not(.activo) { border-color: var(--floodlight); }
+@extends('layouts.app')
 
-        .dia-panel { display: none; }
-        .dia-panel.activo { display: block; }
+@section('title', 'Agenda semanal')
 
-        table.agenda {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--superficie);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        table.agenda th {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 1px;
-            color: var(--turf-claro);
-            background: var(--superficie-alta);
-            padding: 10px 6px;
-            text-align: center;
-        }
-        table.agenda th.col-hora { width: 80px; }
-        table.agenda td {
-            padding: 10px 6px;
-            text-align: center;
-            font-size: 14px;
-            border-top: 1px solid rgba(242,242,233,0.06);
-            vertical-align: middle;
-        }
-        td.hora-etiqueta {
-            font-family: 'Roboto Mono', monospace;
-            font-weight: 700;
-            color: var(--muted);
-            font-size: 14px;
-        }
-        td.libre { color: rgba(242,242,233,0.3); font-size: 13px; }
-        td.ocupada {
-            background: rgba(63,139,78,0.18);
-        }
-        td.ocupada .cliente { font-weight: 700; color: var(--linea); display: block; font-size: 15px; }
-        td.ocupada .estado-mini {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--floodlight);
-        }
-    </style>
-</head>
-<body>
-<nav class="nav-principal">
-    <div class="nav-marca"><span class="badge">C</span> {{ strtoupper($negocio->name) }}</div>
-    <div class="nav-enlaces">
-        <a href="{{ route('reservas.index', $negocio->slug) }}">Reservas</a>
-        <a href="{{ route('reservas.admin') }}">Panel del día</a>
-        <a href="{{ route('reservas.semana') }}" class="activo">Agenda semanal</a>
-        <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-            @csrf
-            <button type="submit" style="font-family:'Oswald',sans-serif; text-transform:uppercase; font-size:13px; letter-spacing:0.5px; color:var(--muted); background:none; border:none; padding:9px 14px; border-radius:8px; cursor:pointer; transition: background 0.15s ease, color 0.15s ease;" onmouseover="this.style.background='var(--superficie-alta)'; this.style.color='var(--linea)';" onmouseout="this.style.background='none'; this.style.color='var(--muted)';">Salir</button>
-        </form>
-    </div>
-</nav>
-<div class="contenedor">
-    <h1>Agenda semanal</h1>
-    <div class="subtitulo">Fútbol 5 · vista de lunes a domingo, Cancha 1 y Cancha 2</div>
+@section('nav')
+    @include('partials.nav-negocio', ['negocio' => $negocio, 'activo' => 'semana'])
+@endsection
 
-    <div class="nav-semana">
-        <a href="{{ route('reservas.semana', ['semana' => $inicioSemana->copy()->subWeek()->format('Y-m-d')]) }}">&larr; Semana anterior</a>
-        <div class="rango-semana">{{ $inicioSemana->format('d M') }} – {{ $inicioSemana->copy()->addDays(6)->format('d M Y') }}</div>
-        <a href="{{ route('reservas.semana', ['semana' => $inicioSemana->copy()->addWeek()->format('Y-m-d')]) }}">Semana siguiente &rarr;</a>
+@php
+    $esSalon = $negocio->tipo_negocio === 'salon';
+    $finSemana = $inicioSemana->copy()->addDays(6);
+    // Abre la pestaña de hoy si la semana mostrada la incluye; si no, el lunes.
+    $diaActivo = collect($dias)->search(fn ($d) => $d['fecha']->isToday());
+    $diaActivo = $diaActivo === false ? 0 : $diaActivo;
+@endphp
+
+@push('styles')
+<style>
+    .nav-semana { display: flex; align-items: center; gap: 8px; }
+    .rango-semana { font-family: var(--fuente-titulo); font-weight: 700; font-size: 15px; padding: 0 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+    .tabs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-bottom: 18px; }
+    .tab {
+        font-family: var(--fuente); font-size: 12px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+        padding: 12px 6px; border-radius: 12px; background: var(--superficie); border: 1px solid var(--borde);
+        cursor: pointer; text-align: center; color: var(--muted); transition: border-color 0.15s, background 0.15s;
+        position: relative;
+    }
+    .tab:hover:not(.activo) { border-color: var(--borde-fuerte); color: var(--linea); }
+    .tab .dia-num { display: block; font-family: var(--fuente-titulo); font-size: 22px; font-weight: 800; letter-spacing: 0; color: var(--linea); margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .tab .contador { display: block; margin-top: 4px; font-size: 11px; font-weight: 500; text-transform: none; letter-spacing: 0; }
+    .tab.activo { background: var(--turf-claro); border-color: var(--turf-claro); color: var(--texto-primario); box-shadow: 0 8px 22px color-mix(in srgb, var(--turf) 35%, transparent); }
+    .tab.activo .dia-num { color: var(--texto-primario); }
+    .tab.hoy::after { content: ""; position: absolute; top: 8px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--floodlight); box-shadow: 0 0 8px var(--floodlight); }
+
+    .dia-panel { display: none; }
+    .dia-panel.activo { display: block; }
+
+    .tabla-scroll { overflow-x: auto; border-radius: var(--radio); border: 1px solid var(--borde); background: var(--superficie); -webkit-overflow-scrolling: touch; }
+    table.agenda { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 100%; }
+    table.agenda th {
+        position: sticky; top: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+        color: var(--texto-suave); background: var(--superficie-alta); padding: 14px 10px; text-align: center; white-space: nowrap;
+        border-bottom: 1px solid var(--borde-fuerte);
+    }
+    table.agenda th .icon { color: var(--primario-vis); margin-right: 4px; }
+    table.agenda td { padding: 6px; text-align: center; font-size: 14px; border-top: 1px solid var(--borde); vertical-align: middle; min-width: 140px; }
+    table.agenda .col-hora { position: sticky; left: 0; z-index: 1; width: 96px; min-width: 96px; background: var(--superficie-alta); }
+    table.agenda th.col-hora { z-index: 2; }
+    td.hora-etiqueta { font-weight: 600; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; border-right: 1px solid var(--borde); }
+    td.libre { color: color-mix(in srgb, var(--linea) 22%, transparent); font-size: 13px; }
+    .bloque-reserva { display: block; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--acento-vis) 12%, transparent); border: 1px solid color-mix(in srgb, var(--acento-vis) 25%, transparent); text-align: left; }
+    .bloque-reserva.confirmada { background: color-mix(in srgb, var(--primario-vis) 12%, transparent); border-color: color-mix(in srgb, var(--primario-vis) 28%, transparent); }
+    .bloque-reserva .cliente { display: block; font-weight: 600; color: var(--linea); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+    .bloque-reserva .estado-mini { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--acento-vis); }
+    .bloque-reserva.confirmada .estado-mini { color: var(--primario-vis); }
+
+    .leyenda { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; color: var(--muted); }
+    .leyenda span { display: inline-flex; align-items: center; gap: 8px; }
+    .leyenda i { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+
+    @media (max-width: 1024px) {
+        .tabs { display: flex; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; }
+        .tab { flex: 0 0 76px; scroll-snap-align: start; }
+    }
+    @media (max-width: 720px) {
+        .nav-semana { width: 100%; justify-content: space-between; }
+        .rango-semana { font-size: 14px; padding: 0 4px; }
+        .tab { flex-basis: 64px; padding: 10px 4px; }
+        .tab .dia-num { font-size: 19px; }
+        table.agenda .col-hora { width: 74px; min-width: 74px; }
+        table.agenda td { min-width: 120px; padding: 5px; }
+        td.hora-etiqueta { font-size: 12px; }
+    }
+</style>
+@endpush
+
+@section('content')
+    <div class="page-head">
+        <div>
+            <div class="eyebrow"><x-icon name="calendar-days" size="14" /> Vista semanal</div>
+            <h1>Agenda semanal</h1>
+            <div class="subtitulo">Ocupación de lunes a domingo · {{ $canchas->count() }} {{ $esSalon ? ($canchas->count() === 1 ? 'profesional' : 'profesionales') : ($canchas->count() === 1 ? 'cancha' : 'canchas') }}</div>
+        </div>
+        <div class="nav-semana">
+            <a href="{{ route('reservas.semana', ['semana' => $inicioSemana->copy()->subWeek()->format('Y-m-d')]) }}" class="btn btn-secondary btn-icon" aria-label="Semana anterior"><x-icon name="chevron-left" /></a>
+            <span class="rango-semana">{{ $inicioSemana->locale('es')->translatedFormat('j M') }} – {{ $finSemana->locale('es')->translatedFormat('j M Y') }}</span>
+            <a href="{{ route('reservas.semana', ['semana' => $inicioSemana->copy()->addWeek()->format('Y-m-d')]) }}" class="btn btn-secondary btn-icon" aria-label="Semana siguiente"><x-icon name="chevron-right" /></a>
+        </div>
     </div>
 
-    <div class="tabs" id="tabs">
+    @if ($canchas->isEmpty())
+        <div class="vacio">
+            <div class="ico-caja"><x-icon name="inbox" size="26" /></div>
+            <strong>No hay {{ $esSalon ? 'profesionales' : 'canchas' }} activas</strong>
+            Pide al administrador que registre al menos una para ver la agenda.
+        </div>
+    @else
+        <div class="tabs" id="tabs" role="tablist">
+            @foreach ($dias as $i => $dia)
+                @php $total = collect($dia['matriz'])->flatten()->filter()->unique('id')->count(); @endphp
+                <button type="button" role="tab" class="tab {{ $dia['fecha']->isToday() ? 'hoy' : '' }} {{ $i === $diaActivo ? 'activo' : '' }}" data-dia="{{ $i }}">
+                    {{ mb_substr($dia['nombre'], 0, 3) }}
+                    <span class="dia-num">{{ $dia['fecha']->format('d') }}</span>
+                    <span class="contador">{{ $total }} {{ $total === 1 ? 'reserva' : 'reservas' }}</span>
+                </button>
+            @endforeach
+        </div>
+
         @foreach ($dias as $i => $dia)
-            <div class="tab {{ $dia['fecha']->isToday() ? 'hoy' : '' }} {{ $i === 0 ? 'activo' : '' }}" data-dia="{{ $i }}">
-                {{ substr($dia['nombre'], 0, 3) }}
-                <span class="dia-num">{{ $dia['fecha']->format('d') }}</span>
+            <div class="dia-panel {{ $i === $diaActivo ? 'activo' : '' }}" data-dia-panel="{{ $i }}" role="tabpanel">
+                <div class="tabla-scroll">
+                    <table class="agenda">
+                        <thead>
+                            <tr>
+                                <th class="col-hora">Hora</th>
+                                @foreach ($canchas as $cancha)
+                                    <th><x-icon :name="$esSalon ? 'user' : 'pitch'" size="14" />{{ $cancha->nombre }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($horas as $hora)
+                                <tr>
+                                    <td class="hora-etiqueta col-hora">{{ \Carbon\Carbon::createFromFormat('H:i', $hora)->format('g:i A') }}</td>
+                                    @foreach ($canchas as $cancha)
+                                        @php $reserva = $dia['matriz'][$cancha->id][$hora] ?? null; @endphp
+                                        @if ($reserva)
+                                            <td>
+                                                <span class="bloque-reserva {{ $reserva->estado === 'confirmada' ? 'confirmada' : '' }}">
+                                                    <span class="cliente">{{ $reserva->nombre_cliente }}</span>
+                                                    <span class="estado-mini">{{ $reserva->estado }}</span>
+                                                </span>
+                                            </td>
+                                        @else
+                                            <td class="libre">Libre</td>
+                                        @endif
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         @endforeach
-    </div>
 
-    @foreach ($dias as $i => $dia)
-        <div class="dia-panel {{ $i === 0 ? 'activo' : '' }}" data-dia-panel="{{ $i }}">
-            <table class="agenda">
-                <thead>
-                    <tr>
-                        <th class="col-hora">Hora</th>
-                        @foreach ($canchas as $cancha)
-                            <th>{{ $cancha->nombre }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($horas as $hora)
-                        <tr>
-                            @php
-                                [$hh, $mm] = explode(':', $hora);
-                                $hh = (int) $hh;
-                                $sufijo = $hh >= 12 ? 'PM' : 'AM';
-                                $h12 = $hh % 12; if ($h12 === 0) $h12 = 12;
-                            @endphp
-                            <td class="hora-etiqueta">{{ $h12 }}:{{ $mm }} {{ $sufijo }}</td>
-                            @foreach ($canchas as $cancha)
-                                @php $reserva = $dia['matriz'][$cancha->id][$hora] ?? null; @endphp
-                                @if ($reserva)
-                                    <td class="ocupada">
-                                        <span class="cliente">{{ $reserva->nombre_cliente }}</span>
-                                        <span class="estado-mini">{{ $reserva->estado }}</span>
-                                    </td>
-                                @else
-                                    <td class="libre">Libre</td>
-                                @endif
-                            @endforeach
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="leyenda">
+            <span><i style="background:color-mix(in srgb, var(--acento-vis) 50%, transparent)"></i> Pendiente</span>
+            <span><i style="background:color-mix(in srgb, var(--primario-vis) 50%, transparent)"></i> Confirmada</span>
+            <span><i style="background:var(--floodlight);border-radius:50%;width:8px;height:8px"></i> Hoy</span>
         </div>
-    @endforeach
-</div>
+    @endif
+@endsection
 
+@push('scripts')
 <script>
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -265,6 +163,6 @@ document.querySelectorAll('.tab').forEach(tab => {
         document.querySelector(`[data-dia-panel="${i}"]`).classList.add('activo');
     });
 });
+document.querySelector('.tab.activo')?.scrollIntoView({ block: 'nearest', inline: 'center' });
 </script>
-</body>
-</html>
+@endpush

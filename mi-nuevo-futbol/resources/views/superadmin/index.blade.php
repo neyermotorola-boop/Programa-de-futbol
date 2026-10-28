@@ -1,112 +1,106 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin — Negocios</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --fondo: #0F1C14; --superficie: #16241B; --superficie-alta: #1E3024;
-            --turf: #2F6B3C; --turf-claro: #3F8B4E; --linea: #F2F2E9;
-            --floodlight: #F2A93B; --muted: #9FB3A5; --error: #E08674;
-        }
-        * { box-sizing: border-box; }
-        body { margin: 0; background: var(--fondo); color: var(--linea); font-family: 'Inter', sans-serif; padding: 24px 16px 64px; }
-        .contenedor { max-width: 900px; margin: 0 auto; }
-        .nav-principal {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--superficie); border: 1px solid rgba(242,242,233,0.08);
-            border-radius: 12px; padding: 12px 18px; margin-bottom: 24px; flex-wrap: wrap; gap: 10px;
-        }
-        .nav-marca { font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px; font-size: 20px; display: flex; align-items: center; gap: 10px; }
-        .nav-marca .badge {
-            width: 34px; height: 34px; border-radius: 9px;
-            background: linear-gradient(135deg, var(--turf), var(--turf-claro));
-            color: var(--floodlight); display: flex; align-items: center; justify-content: center;
-            font-size: 17px; font-weight: 700; box-shadow: 0 0 10px rgba(242,169,59,0.2);
-        }
-        .nav-marca .tag { font-size: 12px; color: var(--floodlight); font-family: 'Oswald', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
-        .nav-enlaces button {
-            font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px;
-            color: var(--muted); background: none; border: none; padding: 9px 14px; border-radius: 8px; cursor: pointer;
-        }
-        .nav-enlaces button:hover { color: var(--linea); background: var(--superficie-alta); }
-        h1 { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 28px; margin: 0 0 4px; }
-        .subtitulo { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
-        .mensaje-exito {
-            background: rgba(63,139,78,0.18); border: 1px solid var(--turf-claro); color: var(--linea);
-            padding: 14px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;
-        }
-        .boton-crear {
-            display: inline-block; font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 13px;
-            letter-spacing: 0.5px; background: var(--floodlight); color: #1a1204; padding: 12px 20px;
-            border-radius: 8px; text-decoration: none; font-weight: 600; margin-bottom: 24px;
-        }
-        .boton-crear:hover { filter: brightness(1.08); }
-        .negocio {
-            background: var(--superficie); border: 1px solid rgba(242,242,233,0.08); border-radius: 12px;
-            padding: 16px 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
-            gap: 12px; flex-wrap: wrap;
-        }
-        .negocio .nombre { font-family: 'Oswald', sans-serif; font-size: 17px; font-weight: 600; }
-        .negocio .detalle { color: var(--muted); font-size: 13px; margin-top: 4px; }
-        .negocio .detalle a { color: var(--turf-claro); }
-        .acciones { display: flex; gap: 8px; }
-        .acciones a, .acciones button {
-            font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;
-            padding: 9px 14px; border-radius: 8px; text-decoration: none; cursor: pointer; border: none;
-        }
-        .btn-editar { background: var(--superficie-alta); color: var(--linea); border: 1px solid rgba(242,242,233,0.15) !important; }
-        .btn-eliminar { background: var(--superficie-alta); color: var(--muted); border: 1px solid rgba(242,242,233,0.15) !important; }
-        .btn-eliminar:hover { color: var(--error); border-color: var(--error) !important; }
-        .vacio { color: var(--muted); text-align: center; padding: 40px 0; }
-    </style>
-</head>
-<body>
-<nav class="nav-principal">
-    <div class="nav-marca"><span class="badge">C</span> Cancha<span class="tag">Ya · Super Admin</span></div>
-    <div class="nav-enlaces">
-        <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-            @csrf
-            <button type="submit">Salir</button>
-        </form>
-    </div>
-</nav>
+@extends('layouts.app')
 
-<div class="contenedor">
-    <h1>Negocios</h1>
-    <div class="subtitulo">Aquí administras todas las canchas registradas en la plataforma.</div>
+@section('title', 'Negocios')
+
+@section('nav')
+    @include('partials.nav-superadmin', ['activo' => 'negocios'])
+@endsection
+
+@push('styles')
+<style>
+    .negocio { display: flex; flex-direction: column; gap: 16px; transition: border-color 0.15s, transform 0.15s; }
+    .negocio:hover { border-color: var(--borde-fuerte); transform: translateY(-2px); }
+    .negocio-top { display: flex; gap: 14px; align-items: flex-start; }
+    .negocio-ico { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; flex: none; background: linear-gradient(135deg, color-mix(in srgb, var(--primario-vis) 35%, transparent), rgba(47,107,60,0.15)); color: var(--primario-vis); border: 1px solid color-mix(in srgb, var(--primario-vis) 20%, transparent); }
+    .negocio-ico.salon { background: linear-gradient(135deg, color-mix(in srgb, var(--acento-vis) 30%, transparent), color-mix(in srgb, var(--acento-vis) 8%, transparent)); color: var(--acento-vis); border-color: color-mix(in srgb, var(--acento-vis) 25%, transparent); }
+    .negocio-nombre { font-family: var(--fuente-titulo); font-size: 17px; font-weight: 700; line-height: 1.25; margin-bottom: 6px; word-break: break-word; }
+    .negocio-datos { display: grid; gap: 8px; font-size: 14px; color: var(--texto-suave); padding: 14px 0; border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
+    .negocio-datos div { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .negocio-datos .icon { color: var(--muted); }
+    .negocio-datos a { color: var(--primario-vis); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .negocio-datos a:hover { text-decoration: underline; }
+    .negocio.apagado { opacity: 0.72; }
+    .negocio.apagado .negocio-ico { filter: grayscale(0.8); }
+    .chip.apagado { color: var(--error); background: color-mix(in srgb, var(--error) 12%, transparent); border-color: color-mix(in srgb, var(--error) 30%, transparent); }
+</style>
+@endpush
+
+@section('content')
+    <div class="page-head">
+        <div>
+            <div class="eyebrow"><x-icon name="shield" size="14" /> Administración</div>
+            <h1>Negocios</h1>
+            <div class="subtitulo">Administra todos los negocios registrados en la plataforma.</div>
+        </div>
+        <a href="{{ route('superadmin.crear') }}" class="btn btn-primary"><x-icon name="plus" /> Crear negocio</a>
+    </div>
+
+    @include('superadmin._credenciales')
 
     @if (session('exito'))
-        <div class="mensaje-exito">{{ session('exito') }}</div>
+        <div class="alerta alerta-exito" role="status"><x-icon name="check-circle" /> <div>{{ session('exito') }}</div></div>
     @endif
 
-    <a href="{{ route('superadmin.crear') }}" class="boton-crear">+ Crear negocio nuevo</a>
-
-    @forelse ($negocios as $negocio)
-        <div class="negocio">
-            
-            <div>
-                <div class="nombre">{{ $negocio->name }}</div>
-                <div class="detalle">
-                    {{ $negocio->canchas_count }} {{ $negocio->canchas_count === 1 ? 'cancha' : 'canchas' }} ·
-                    {{ $negocio->hora_apertura }} – {{ $negocio->hora_cierre }} ·
-                    <a href="{{ route('reservas.index', $negocio->slug) }}">/reservas/{{ $negocio->slug }}</a>
-                </div>
-            </div>
-            <div class="acciones">
-                <a href="{{ route('superadmin.editar', $negocio) }}" class="btn-editar">Editar</a>
-                <form method="POST" action="{{ route('superadmin.eliminar', $negocio) }}" onsubmit="return confirm('¿Eliminar {{ $negocio->name }} junto con TODAS sus canchas y reservas? Esto no se puede deshacer.');">
-                    @csrf
-                    <button type="submit" class="btn-eliminar">Eliminar</button>
-                </form>
-            </div>
+    <div class="stats">
+        <div class="stat">
+            <span class="ico-caja"><x-icon name="building" size="20" /></span>
+            <div><div class="valor">{{ $negocios->count() }}</div><div class="etiqueta">Negocios</div></div>
         </div>
-    @empty
-        <div class="vacio">Todavía no has creado ningún negocio.</div>
-    @endforelse
-</div>
-</body>
-</html>
+        <div class="stat">
+            <span class="ico-caja verde"><x-icon name="pitch" size="20" /></span>
+            <div><div class="valor">{{ $negocios->where('tipo_negocio', 'canchas')->count() }}</div><div class="etiqueta">Canchas deportivas</div></div>
+        </div>
+        <div class="stat">
+            <span class="ico-caja"><x-icon name="scissors" size="20" /></span>
+            <div><div class="valor">{{ $negocios->where('tipo_negocio', 'salon')->count() }}</div><div class="etiqueta">Salones de belleza</div></div>
+        </div>
+        <div class="stat">
+            <span class="ico-caja"><x-icon name="car" size="20" /></span>
+            <div><div class="valor">{{ $negocios->where('tipo_negocio', 'parqueadero')->count() }}</div><div class="etiqueta">Parqueaderos</div></div>
+        </div>
+    </div>
+
+    @if ($negocios->isEmpty())
+        <div class="vacio">
+            <div class="ico-caja"><x-icon name="building" size="26" /></div>
+            <strong>Todavía no hay negocios</strong>
+            Crea el primero para empezar a recibir reservas.
+            <div style="margin-top:18px"><a href="{{ route('superadmin.crear') }}" class="btn btn-primary"><x-icon name="plus" /> Crear negocio</a></div>
+        </div>
+    @else
+        <div class="grid-auto">
+            @foreach ($negocios as $negocio)
+                @php
+                    $esSalon = $negocio->tipo_negocio === 'salon';
+                    $esParqueadero = $negocio->esParqueadero();
+                @endphp
+                <article class="tarjeta negocio {{ $negocio->activo ? '' : 'apagado' }}">
+                    <div class="negocio-top">
+                        <span class="negocio-ico {{ $esSalon ? 'salon' : '' }}"><x-icon :name="$esParqueadero ? 'car' : ($esSalon ? 'scissors' : 'pitch')" size="22" /></span>
+                        <div style="min-width:0">
+                            <div class="negocio-nombre">{{ $negocio->name }}</div>
+                            <span class="chip {{ $esSalon ? 'ambar' : 'verde' }}">{{ $esParqueadero ? 'Parqueadero' : ($esSalon ? 'Salón de belleza' : 'Canchas deportivas') }}</span>
+                            @unless ($negocio->activo)<span class="chip apagado"><x-icon name="power" size="12" /> Desactivado</span>@endunless
+                        </div>
+                    </div>
+
+                    <div class="negocio-datos">
+                        @if ($esParqueadero)
+                            <div><x-icon name="car" size="16" /> {{ $negocio->parqueaderoIngresos()->dentro()->count() }} dentro ahora · {{ $negocio->tiposVehiculo()->count() }} tipos de vehículo</div>
+                        @elseif ($esSalon)
+                            <div><x-icon name="users" size="16" /> {{ $negocio->canchas_count }} {{ $negocio->canchas_count === 1 ? 'profesional' : 'profesionales' }} · {{ $negocio->servicios_count }} {{ $negocio->servicios_count === 1 ? 'servicio' : 'servicios' }}</div>
+                        @else
+                            <div><x-icon name="pitch" size="16" /> {{ $negocio->canchas_count }} {{ $negocio->canchas_count === 1 ? 'cancha' : 'canchas' }}</div>
+                        @endif
+                        @unless ($esParqueadero)
+                            <div><x-icon name="clock" size="16" /> <span class="num">{{ $negocio->hora_apertura }} – {{ $negocio->hora_cierre }}</span></div>
+                            <div><x-icon name="link" size="16" /> <a href="{{ route('reservas.index', $negocio->slug) }}" target="_blank">/reservas/{{ $negocio->slug }}</a></div>
+                        @endunless
+                    </div>
+
+                    @include('superadmin._acciones', ['negocio' => $negocio])
+                </article>
+            @endforeach
+        </div>
+    @endif
+@endsection

@@ -1,120 +1,143 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear negocio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --fondo: #0F1C14; --superficie: #16241B; --superficie-alta: #1E3024;
-            --turf: #2F6B3C; --turf-claro: #3F8B4E; --linea: #F2F2E9;
-            --floodlight: #F2A93B; --muted: #9FB3A5; --error: #E08674;
-        }
-        * { box-sizing: border-box; }
-        body { margin: 0; background: var(--fondo); color: var(--linea); font-family: 'Inter', sans-serif; padding: 24px 16px 64px; }
-        .contenedor { max-width: 560px; margin: 0 auto; }
-        .enlace-volver { display: inline-block; color: var(--floodlight); font-size: 13px; text-decoration: none; margin-bottom: 16px; }
-        h1 { font-family: 'Oswald', sans-serif; text-transform: uppercase; font-size: 26px; margin: 0 0 20px; }
-        .tarjeta { background: var(--superficie); border: 1px solid rgba(242,242,233,0.08); border-radius: 14px; padding: 24px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        input[type=text], input[type=email], input[type=password], input[type=time], input[type=number] {
-            width: 100%; background: var(--superficie-alta); border: 1px solid rgba(242,242,233,0.12); color: var(--linea);
-            padding: 12px 14px; border-radius: 8px; font-size: 15px; font-family: 'Inter', sans-serif; margin-bottom: 16px;
-        }
-        input:focus { outline: 2px solid var(--floodlight); outline-offset: 1px; }
-        .fila-doble { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .ayuda { font-size: 12px; color: var(--muted); margin: -10px 0 16px; }
-        .cancha-fila { display: flex; gap: 8px; align-items: center; }
-        .cancha-fila input { flex: 1; }
-        .quitar-cancha {
-            background: var(--superficie-alta); border: 1px solid rgba(242,242,233,0.15); color: var(--muted);
-            border-radius: 8px; width: 42px; height: 42px; cursor: pointer; font-size: 16px; margin-bottom: 16px; flex-shrink: 0;
-        }
-        .quitar-cancha:hover { color: var(--error); border-color: var(--error); }
-        .agregar-cancha {
-            background: none; border: 1px dashed rgba(242,242,233,0.25); color: var(--muted); width: 100%;
-            padding: 10px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; margin-bottom: 20px;
-        }
-        .agregar-cancha:hover { border-color: var(--floodlight); color: var(--floodlight); }
-        button.guardar {
-            width: 100%; background: var(--floodlight); color: #1a1204; border: none; padding: 14px; border-radius: 8px;
-            font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
-        }
-        button.guardar:hover { filter: brightness(1.08); }
-        .errores { background: rgba(224,134,116,0.15); border: 1px solid var(--error); color: var(--error); padding: 12px 16px; border-radius: 8px; margin-bottom: 18px; font-size: 13px; }
-    </style>
-</head>
-<body>
-<div class="contenedor">
-    <a href="{{ route('superadmin.index') }}" class="enlace-volver">&larr; Volver a negocios</a>
-    <h1>Crear negocio nuevo</h1>
+@extends('layouts.app')
+
+@section('title', 'Crear negocio')
+
+@section('nav')
+    @include('partials.nav-superadmin', ['activo' => 'crear'])
+@endsection
+
+@push('styles')
+<style>
+    .formulario-estrecho { max-width: 720px; }
+    .tipo-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+    .tipo-opcion {
+        display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer;
+        border: 1px solid var(--borde-fuerte); background: var(--superficie-alta); color: var(--linea);
+        padding: 14px; border-radius: 12px; font-family: var(--fuente); transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .tipo-opcion:hover { border-color: color-mix(in srgb, var(--linea) 30%, transparent); }
+    .tipo-opcion .ico-caja { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--linea) 6%, transparent); color: var(--muted); transition: all 0.15s; }
+    .tipo-opcion strong { display: block; font-size: 14px; font-weight: 600; }
+    .tipo-opcion small { display: block; font-size: 12px; color: var(--muted); }
+    .tipo-opcion.activo { border-color: var(--acento-vis); background: color-mix(in srgb, var(--acento-vis) 8%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acento-vis) 12%, transparent); }
+    .tipo-opcion.activo .ico-caja { background: var(--floodlight); color: var(--texto-acento); }
+    .seccion-oculta { display: none; }
+    .nota-cliente { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 22px; padding: 12px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.5; color: var(--texto-suave); background: var(--superficie-alta); border: 1px solid var(--borde); }
+    .nota-cliente .icon { flex: none; margin-top: 2px; color: var(--muted); }
+    .enviar { margin-top: 8px; }
+
+    @media (max-width: 720px) {
+        .tipo-selector { grid-template-columns: 1fr; }
+    }
+</style>
+@endpush
+
+@section('content')
+    <a href="{{ route('superadmin.index') }}" class="enlace-volver"><x-icon name="arrow-left" size="16" /> Volver a negocios</a>
+    <div class="page-head">
+        <div>
+            <div class="eyebrow"><x-icon name="sparkles" size="14" /> Nuevo registro</div>
+            <h1>Crear negocio</h1>
+            <div class="subtitulo">Crea la cuenta del cliente con su correo y su clave. Lo demás lo configura él desde su panel.</div>
+        </div>
+    </div>
 
     @if ($errors->any())
-        <div class="errores">
-            @foreach ($errors->all() as $error)
-                <div>{{ $error }}</div>
-            @endforeach
+        <div class="alerta alerta-error" role="alert">
+            <x-icon name="alert-circle" />
+            <div>@foreach ($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>
         </div>
     @endif
 
-    <form method="POST" action="{{ route('superadmin.guardar') }}" class="tarjeta">
+    <form method="POST" action="{{ route('superadmin.guardar') }}" id="formCrear" class="tarjeta formulario-estrecho">
         @csrf
-        <label for="name">Nombre del negocio</label>
-        <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Ej: Complejo El Golazo" required>
 
-        <label for="slug">Apodo para su página pública (sin espacios ni tildes)</label>
-        <input type="text" id="slug" name="slug" value="{{ old('slug') }}" placeholder="Ej: el-golazo" required>
-        <div class="ayuda">Su página quedará en: tudominio.com/reservas/<span id="preview-slug">apodo</span></div>
+        <div class="tarjeta-titulo">
+            <span class="ico-caja"><x-icon name="building" /></span>
+            <h2>Datos del negocio <small>Información general y acceso</small></h2>
+        </div>
 
-        <label for="email">Correo para iniciar sesión</label>
-        <input type="email" id="email" name="email" value="{{ old('email') }}" required>
+        <span class="label">Tipo de negocio</span>
+        <div class="tipo-selector">
+            <button type="button" class="tipo-opcion activo" data-tipo="canchas">
+                <span class="ico-caja"><x-icon name="pitch" size="20" /></span>
+                <span><strong>Canchas deportivas</strong><small>Reservas por horas</small></span>
+            </button>
+            <button type="button" class="tipo-opcion" data-tipo="salon">
+                <span class="ico-caja"><x-icon name="scissors" size="20" /></span>
+                <span><strong>Salón de belleza</strong><small>Turnos por servicio</small></span>
+            </button>
+            <button type="button" class="tipo-opcion" data-tipo="parqueadero">
+                <span class="ico-caja"><x-icon name="car" size="20" /></span>
+                <span><strong>Parqueadero</strong><small>Cobro por tiempo</small></span>
+            </button>
+        </div>
+        <input type="hidden" name="tipo_negocio" id="tipo_negocio" value="{{ old('tipo_negocio', 'canchas') }}">
 
-        <label for="password">Contraseña</label>
-        <input type="password" id="password" name="password" required>
+        <div class="campo">
+            <label for="name">Nombre del negocio</label>
+            <div class="control"><x-icon name="building" /><input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Ej: Complejo El Golazo" required></div>
+        </div>
 
-        <div class="fila-doble">
-            <div>
-                <label for="hora_apertura">Hora de apertura</label>
-                <input type="time" id="hora_apertura" name="hora_apertura" value="{{ old('hora_apertura', '06:00') }}" required>
+        {{-- Un parqueadero no tiene página pública, así que no necesita apodo --}}
+        <div class="campo" id="campoSlug">
+            <label for="slug">Apodo para su página pública</label>
+            <div class="control"><x-icon name="link" /><input type="text" id="slug" name="slug" value="{{ old('slug') }}" placeholder="Ej: el-golazo" required></div>
+            <div class="ayuda">Sin espacios ni tildes. Página: <code>/reservas/<span id="preview-slug">{{ old('slug') ?: 'apodo' }}</span></code></div>
+        </div>
+
+        <div class="grid-2">
+            <div class="campo">
+                <label for="email">Correo para iniciar sesión</label>
+                <div class="control"><x-icon name="mail" /><input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="negocio@correo.com" autocomplete="off" required></div>
             </div>
-            <div>
-                <label for="hora_cierre">Hora de cierre</label>
-                <input type="time" id="hora_cierre" name="hora_cierre" value="{{ old('hora_cierre', '23:00') }}" required>
+            <div class="campo">
+                <label for="password">Contraseña</label>
+                <div class="control"><x-icon name="lock" /><input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" minlength="6" required></div>
             </div>
         </div>
 
-        <label for="max_horas_por_reserva">Máximo de horas seguidas por reserva</label>
-        <input type="number" id="max_horas_por_reserva" name="max_horas_por_reserva" min="1" max="12" value="{{ old('max_horas_por_reserva', 4) }}" required>
-
-        <label>Canchas de este negocio</label>
-        <div id="listaCanchas">
-            <div class="cancha-fila">
-                <input type="text" name="canchas[]" placeholder="Ej: Cancha 1" value="Cancha 1" required>
-            </div>
-            <div class="cancha-fila">
-                <input type="text" name="canchas[]" placeholder="Ej: Cancha 2" value="Cancha 2" required>
-            </div>
+        <div class="nota-cliente">
+            <x-icon name="info" size="16" />
+            <span id="notaCliente"></span>
         </div>
-        <button type="button" class="agregar-cancha" id="agregarCancha">+ Agregar otra cancha</button>
 
-        <button type="submit" class="guardar">Crear negocio</button>
+        <button type="submit" class="btn btn-primary btn-block enviar"><x-icon name="check" /> Crear negocio</button>
     </form>
-</div>
+@endsection
 
+@push('scripts')
 <script>
-const inputNombre = document.getElementById('name');
+// --- Selector de tipo de negocio ---
+const tiposOpciones = document.querySelectorAll('.tipo-opcion');
+const inputTipo = document.getElementById('tipo_negocio');
+const campoSlug = document.getElementById('campoSlug');
 const inputSlug = document.getElementById('slug');
+const notas = {
+    canchas: 'El cliente agrega después sus canchas, su horario y su marca desde Configuración.',
+    salon: 'El cliente agrega después sus profesionales, sus servicios y su horario desde Configuración.',
+    parqueadero: 'El cliente define después su tarifa (por hora o por minuto) y empieza a registrar placas desde su panel.',
+};
+
+function actualizarTipo(tipo) {
+    inputTipo.value = tipo;
+    tiposOpciones.forEach(op => op.classList.toggle('activo', op.dataset.tipo === tipo));
+    const sinPagina = tipo === 'parqueadero';
+    campoSlug.classList.toggle('seccion-oculta', sinPagina);
+    inputSlug.required = !sinPagina;
+    document.getElementById('notaCliente').textContent = notas[tipo] || '';
+}
+
+tiposOpciones.forEach(op => op.addEventListener('click', () => actualizarTipo(op.dataset.tipo)));
+actualizarTipo(inputTipo.value);
+
+// --- Slug automático a partir del nombre ---
+const inputNombre = document.getElementById('name');
 let slugEditadoManualmente = false;
 
 function generarSlug(texto) {
-    return texto
-        .toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quita tildes
-        .replace(/[^a-z0-9\s-]/g, '') // quita símbolos raros
-        .trim()
-        .replace(/\s+/g, '-'); // espacios -> guiones
+    return texto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
 }
 
 inputNombre.addEventListener('input', () => {
@@ -123,24 +146,9 @@ inputNombre.addEventListener('input', () => {
         document.getElementById('preview-slug').textContent = inputSlug.value || 'apodo';
     }
 });
-
 inputSlug.addEventListener('input', () => {
     slugEditadoManualmente = true;
     document.getElementById('preview-slug').textContent = inputSlug.value || 'apodo';
 });
-
-document.getElementById('agregarCancha').addEventListener('click', () => {
-    const lista = document.getElementById('listaCanchas');
-    const numero = lista.children.length + 1;
-    const fila = document.createElement('div');
-    fila.className = 'cancha-fila';
-    fila.innerHTML = `
-        <input type="text" name="canchas[]" placeholder="Ej: Cancha ${numero}">
-        <button type="button" class="quitar-cancha">&times;</button>
-    `;
-    fila.querySelector('.quitar-cancha').addEventListener('click', () => fila.remove());
-    lista.appendChild(fila);
-});
 </script>
-</body>
-</html>
+@endpush
