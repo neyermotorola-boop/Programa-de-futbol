@@ -9,4 +9,11 @@ return [
     'max_horas_por_reserva' => 4,
     // Zona horaria en que atienden los negocios: define qué es "hoy" y qué horas ya pasaron
     'zona' => 'America/Bogota',
+
+    // Cuenta maestra que crea el SuperAdminSeeder. En producción define SUPERADMIN_PASSWORD
+    // (si no, se genera una clave aleatoria y se muestra una sola vez en el registro del despliegue).
+    'superadmin' => [
+        'email' => env('SUPERADMIN_EMAIL', 'superadmin@canchas.com'),
+        'password' => env('SUPERADMIN_PASSWORD'),
+    ],
 ];

@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Detrás del proxy de Railway (u otro hosting) la conexión llega por HTTP: se confía en sus
+        // cabeceras para que los enlaces, los formularios y las cookies salgan en https.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'cuenta.activa' => \App\Http\Middleware\CuentaActiva::class,
             'solo.reservas' => \App\Http\Middleware\SoloReservas::class,
